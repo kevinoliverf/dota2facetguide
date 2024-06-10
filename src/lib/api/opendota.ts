@@ -1768,6 +1768,7 @@ export interface components {
     };
     /** TeamObjectResponse */
     TeamObjectResponse: {
+      logo_url?: string | null;
       /** @description Team's identifier */
       team_id?: number;
       /** @description The Elo rating of the team */

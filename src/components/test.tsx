@@ -5,30 +5,21 @@ import React, { useEffect, useState } from "react";
 import client from "@/lib/api";
 import {components} from "@/lib/api/opendota";
 import { get } from "http";
+import { HeroList } from "./heroes"; 
 
-type Hero = components["schemas"]["HeroObjectResponse"];
+export type Hero = components["schemas"]["HeroObjectResponse"];
 type TeamMatch = components["schemas"]["TeamMatchObjectResponse"];
 type Match = components["schemas"]["MatchResponse"];
 
-type CreateTaskFormProps = {
-    userID : string;
+type HeroFacetProps = {
+    selectedTeam : number;
 }
 
 
-type HeroVariantPreference = {
-    [variant: number]: number;
-}
-function heroVariantPreferenceToString(heroVariantPreference: HeroVariantPreference | undefined): string {
-    if (!heroVariantPreference) {
-        return '';
-    }
-    let variants = '';
-    for (const variant in heroVariantPreference) {
-        variants += `Variant ${variant}: ${heroVariantPreference[variant]}, `;
-    }
-    return `${variants}`;
-}
-const CreateTaskForm: NextPage = () => {
+// Map of variant to count
+export type HeroVariantPreference = Map<number, number>; 
+
+const HeroFacet: React.FC<HeroFacetProps> = ({selectedTeam}) => {
     const [heroes, setHeroes] = useState<Hero[]>([]); // Add this line
     const [searchTerm, setSearchTerm] = useState('');
     const [heroVariantPrefs, setHeroVariantPrefs] = useState<Map <number, HeroVariantPreference>>(new Map());
@@ -63,77 +54,61 @@ const CreateTaskForm: NextPage = () => {
             return [];
         }
         
-        //const match = await getMatch(matches[0].match_id ? matches[0].match_id : 0);    
-        const match1 = await getMatch(7759259291);
-        const match2 = await getMatch(7758894564);
-        const updatePreferences = (match: Match) => {
+        
+        const updatePreferences = (newHeroVariantPrefs: Map<number, HeroVariantPreference>, match: Match) => {
             match.players?.forEach(player => {
                 if (!(player.hero_id && player.hero_variant)) {
                     return
                 }
-                const existingPref = heroVariantPrefs.get(player.hero_id);
+                const existingPref = newHeroVariantPrefs.get(player.hero_id);
                 if (existingPref) {
-                    existingPref[player.hero_variant] = (existingPref[player.hero_variant] || 0) + 1;
-                    heroVariantPrefs.set(player.hero_id, existingPref);
+                    const updatedCount = (existingPref.get(player.hero_variant) || 0) + 1
+                    existingPref.set(player.hero_variant, updatedCount) ;
+                    newHeroVariantPrefs.set(player.hero_id, existingPref);
 
                 } else {
-                    const newPref: HeroVariantPreference = {
-                        [player.hero_variant]: 1
-                    };
-                    heroVariantPrefs.set(player.hero_id, newPref);
+                    const newPref = new Map<number, number>();
+                    newPref.set(player.hero_variant, 1);
+                    newHeroVariantPrefs.set(player.hero_id, newPref);
                 }
-                setHeroVariantPrefs(new Map(heroVariantPrefs));
+                setHeroVariantPrefs(newHeroVariantPrefs);
             })
         }
 
-        updatePreferences(match1);
-        updatePreferences(match2);
-       
-        heroVariantPrefs.forEach((pref, heroId) => {
-            console.log(`Hero ID: ${heroId}, Preference: ${heroVariantPreferenceToString(pref)}`);
-        })
+        
+        const oneMonthAgo = Math.floor((Date.now() / 1000) - (30 * 24 * 60 * 60));
+        const newHeroVariantPrefs = new Map();
+        for (let index = 0; index < 5; index++) {
+            const match = matches[index] as Match;
+            if (!match.match_id) {
+                continue;
+            }
+            if (match.start_time && match.start_time < oneMonthAgo) {
+                break;
+            }
+            const matchInfo = await getMatch(match.match_id)
+            updatePreferences(newHeroVariantPrefs,matchInfo);
+        }
+
+        setHeroVariantPrefs(newHeroVariantPrefs);
         return matches;
     }
     // Add this useEffect
     useEffect(() => {
         getHeroes().then(data => setHeroes(data));
-        getMatches(9247354)
     }, []);
-
+    useEffect(() => {
+        getMatches(selectedTeam)
+    }, [selectedTeam]);
     const filteredHeroes = heroes?.filter(hero =>
         hero.localized_name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
     return (
         <Card className="rounded-md p-5" style={{ width: '100%', height: '100%', overflow: 'auto' }}>
-            <TextField
-                type="text"
-                placeholder="Search..."
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-            />
-            <ImageList sx={{ width: 1000, height: 450 }} cols={5} rowHeight={164}>
-                {filteredHeroes?.map((hero) => (
-                    <div>
-                    <ImageListItem key={hero.id}>
-                        <img
-                            src={`https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/${hero.name?.replace('npc_dota_hero_', '')}.png`}
-                                alt={hero.localized_name}
-                                loading="lazy"
-                            />
-                        </ImageListItem>
-                        {
-                           heroVariantPrefs.get(hero.id)
-                           ? heroVariantPreferenceToString(heroVariantPrefs.get(hero.id))
-                           : <span>No preferences for this hero</span>
-                        }
-                    </div>
-
-
-                ))}
-            </ImageList>
+           <HeroList heroes={filteredHeroes} heroVariantPrefs={heroVariantPrefs}/>
         </Card>
     );
 }
 
 
-export default CreateTaskForm;
+export default HeroFacet;
