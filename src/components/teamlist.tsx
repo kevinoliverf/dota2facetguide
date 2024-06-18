@@ -19,6 +19,8 @@ export const TeamListComponent: React.FC<TeamListComponentProps> = ({selectedTea
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedTeamSchema, setSelectedTeamSchema] = useState<Team>();   
     const [loading, setLoading] = useState(true);
+    const [inputValue, setInputValue] = useState("");
+
     async function getTeams() {
         const teamsResp = await client.GET("/teams", {
             params: {
@@ -73,18 +75,13 @@ export const TeamListComponent: React.FC<TeamListComponentProps> = ({selectedTea
         }
     }, [teams,loading,selectedTeam]);
 
-    const filteredTeams: Team[] = teams?.filter(team =>
-        team.name?.toLowerCase().includes(searchTerm.toLowerCase())
-    ) || [];
-
-    // Lets users type either the subcategory or the item name in the Autocomplete
+    // Lets users type team name in the Autocomplete
     const filterOptions = (options: Team[], { inputValue }: { inputValue: string }) => {
         const lowerInputValue = inputValue.toLowerCase();
         return options.filter(option =>
             option.name?.toLowerCase().includes(lowerInputValue)
         );
     };
-    const [inputValue, setInputValue] = useState("");
     return (
         <Card className="rounded-md p-5" style={{ width: '100%', height: '100%', overflow: 'auto' }}>
             <Autocomplete
@@ -117,8 +114,7 @@ export const TeamListComponent: React.FC<TeamListComponentProps> = ({selectedTea
                         setSelectedTeam(value.team_id ? value.team_id : 0)
                         setSelectedTeamName(value.name ? value.name : "")
                         setSelectedTeamSchema(value);
-                    } else
-                    {
+                    } else {
                         setSelectedTeam(0)
                         setSelectedTeamName("")
                         setSelectedTeamSchema(undefined);

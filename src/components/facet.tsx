@@ -6,9 +6,10 @@ import { Hero } from "./teamherofacets";
 import { ValveHero, getHeroDetails } from "../lib/api/valve/getherodetails";
 import { TeamHeroFacet } from "@/lib/db/teamherofacets";
 
+
 const colorMap: { [key: number]: string } = {
     0: '#803334', // Dark Red
-    1: '#9a7d47', // Dark Yellow / Gold
+    1: '#855730', // Dark Yellow / Gold
     2: '#7c8a31', // Olive Green
     3: '#518792', // Steel Blue
     4: '#534a89', // Indigo
@@ -38,14 +39,33 @@ export const FacetComponent: React.FC<FacetComponentProps> = ({hero, preference}
             }
             const color = colorMap[facet.color];
             elements.push(
-                <Card sx={{ width: 1, height: 1 }} key={variant} style={{ backgroundColor: color }}>
-                    <img src={`https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react/icons/facets/` + facet.icon + `.png`} alt={facet.title_loc} />
-                    <h2>{facet.title_loc}</h2>
-                    <span>Picked {count} times: <br></br>{facet.description_loc.
-                        replace(/<[^>]*>/g, "").
-                        replace('{s:facet_ability_name}', facet.title_loc).
-                        replace(/%.*?%/g," a percentage").
-                        replace(/\{.*?\}|%/g, "")}</span>
+                <Card className="p-2" sx={{ width: 1, height: 1 }} key={variant} style={{ display: "flex", flexDirection:"column", backgroundColor: color }}>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                        <img className="p-1" src={`https://cdn.akamai.steamstatic.com/apps/dota2/images/dota_react/icons/facets/` + facet.icon + `.png`}
+                            alt={facet.title_loc}
+                            style={{
+                                backgroundColor: color,
+                            }}
+                        />
+                        <h3
+                            style={{
+                                backgroundColor: color,
+                            }}
+                        >{facet.title_loc}</h3>
+                    </div>
+                    <span
+                        style={{
+                            backgroundColor: color,
+                        }}
+                    >
+                        Picked {count} times:
+                        <br />
+                        {facet.description_loc.
+                            replace(/<[^>]*>/g, "").
+                            replace('{s:facet_ability_name}', facet.title_loc).
+                            replace(/%.*?%/g, " a percentage").
+                            replace(/\{.*?\}|%/g, "")}
+                    </span>
                 </Card>
             )
         })
@@ -62,7 +82,7 @@ export const FacetComponent: React.FC<FacetComponentProps> = ({hero, preference}
     }, [])
 
     return (
-        <div className="rounded-md p-5" style={{ width: '100%', height: '100%', overflow: 'auto' }}>
+        <div className="rounded-md p-1" style={{ width: '100%', height: '100%', overflow: 'auto' }}>
             {
                 heroVariantToCard(preference)
             }

@@ -11,6 +11,7 @@
 
 
 body {
+  padding-top: 20px;
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
       to bottom,
@@ -27,4 +28,20 @@ body {
 }
 .navyCard {
   background-color: #162235;
+}
+
+h1{
+  font-size: 2.5rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #3f51b5;
+  text-align: center;
+  font-family:sans-serif;
+}
+
+h2 {
+  color: #3f51b5;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
 }

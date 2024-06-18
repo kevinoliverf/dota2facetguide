@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Card, TextField, ImageList, ImageListItem, Autocomplete } from "@mui/material";
+import { Card, TextField, ImageList, ImageListItem, Autocomplete, List, ListItem } from "@mui/material";
 
 import { TeamHeroFacet } from "@/lib/db/teamherofacets";
 
@@ -26,8 +26,6 @@ export const HeroListComponent: React.FC<HeroListComponentProps> = ({ heroes, he
         <div className="rounded-md p-5" style={{ width: '100%', height: '100%', overflow: 'auto' }}>
             <Autocomplete className="p-5"
                 options={heroList}
-                value={searchTerm}
-                inputValue={searchTerm}
                 renderInput={
                     (params) => <TextField {...params} label="Heroes" variant="outlined" />
                 }
@@ -36,7 +34,7 @@ export const HeroListComponent: React.FC<HeroListComponentProps> = ({ heroes, he
                 }
                 }
             />
-            <ImageList sx={{ width: 1, height: 1 }} cols={5} rowHeight={164}>
+            <List className="p-1" sx={{ width: 1, height: 1 }}>
                 {filteredHeroes?.map((hero) => {
                     let heroPreferences: TeamHeroFacet[] = []
                     heroVariantPrefs.forEach((teamHeroFacet) => {
@@ -48,21 +46,21 @@ export const HeroListComponent: React.FC<HeroListComponentProps> = ({ heroes, he
 
                         return (
                             <Card key={hero.id}>
-                                <ImageListItem sx={{ width: 1, height: 1 / 2 }}>
+                                <ListItem className="p-1" sx={{ width: 1, height: 1 / 2 }}>
                                     <img
                                         src={`https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/${hero.name?.replace('npc_dota_hero_', '')}.png`}
                                         alt={hero.localized_name}
                                         loading="lazy"
                                     />
-                                </ImageListItem>
                                 <FacetComponent hero={hero} preference={heroPreferences} />
+                                </ListItem>
                             </Card>
 
 
                         )
                     }
                 })}
-            </ImageList>
+            </List>
         </div>
     );
 }

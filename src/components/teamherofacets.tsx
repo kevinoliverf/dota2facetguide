@@ -43,9 +43,8 @@ type TeamHeroFacetComponentProps = {
     selectedTeamName: string;
 }
 const TeamHeroFacetComponent: React.FC<TeamHeroFacetComponentProps> = ({ selectedTeam, selectedTeamName}) => {
-    const [heroes, setHeroes] = useState<Hero[]>([]); // Add this line
+    const [heroes, setHeroes] = useState<Hero[]>([]); 
     const [searchTerm, setSearchTerm] = useState('');
-// Map<HeroID, HeroVariantPreference> 
     const [heroVariantPrefs, setHeroVariantPrefs] = useState<TeamHeroFacet[]>([]);
 
     
