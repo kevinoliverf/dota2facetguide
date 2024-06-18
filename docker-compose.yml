@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:15.7
+    restart: always
+    environment:
+     POSTGRES_PASSWORD: dota2heroguide
+    ports: 
+      - "5432:5432"
+
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"

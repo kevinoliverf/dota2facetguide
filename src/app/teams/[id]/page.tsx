@@ -4,8 +4,9 @@ import React, {useState } from "react";
 import TeamHeroFacetComponent from "@/components/teamherofacets"; 
 import {TeamListComponent} from "@/components/teamlist";
 
-export default function Page() {
-    const [selectedTeam , setSelectedTeam] = useState<number>(0);
+export default function Page({params}: {params: {id: string}}) {
+    const id = parseInt(params.id);
+    const [selectedTeam , setSelectedTeam] = useState<number>(id);
     const [selectedTeamName , setSelectedTeamName] = useState<string>('');
     
     return (
