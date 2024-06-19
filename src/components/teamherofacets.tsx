@@ -46,6 +46,7 @@ const TeamHeroFacetComponent: React.FC<TeamHeroFacetComponentProps> = ({ selecte
     const [heroes, setHeroes] = useState<Hero[]>([]); 
     const [searchTerm, setSearchTerm] = useState('');
     const [heroVariantPrefs, setHeroVariantPrefs] = useState<TeamHeroFacet[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     
     const processMatch = async (match: Match, selectedTeam: number, selectedTeamName: string) => {
@@ -90,10 +91,8 @@ const TeamHeroFacetComponent: React.FC<TeamHeroFacetComponentProps> = ({ selecte
             }
             if (match.radiant_team && player.player_slot < 128) {
                 team_id = match.radiant_team['team_id']
-                console.log("Setting as Radiant", team_id)
             } else if (match.dire_team) {
                 team_id = match.dire_team['team_id']
-                console.log("Setting as Dire", team_id)
             }
 
             let teamHeroFacets = matchTeamPrefs.get(team_id)
@@ -104,11 +103,8 @@ const TeamHeroFacetComponent: React.FC<TeamHeroFacetComponentProps> = ({ selecte
             let totalVariantPreferenceCount = 1
             const teamHeroFacet = teamHeroFacets.get(player.hero_id)
             if (teamHeroFacet) {
-                console.log("Team Hero Facet found for", player.hero_id, teamHeroFacet)
                 totalVariantPreferenceCount = teamHeroFacet.count + 1
-            } else{
-                console.log("Team Hero Facet not found for", player.hero_id)
-            }
+            } 
             const updatedTeamHeroFacet: TeamHeroFacet = {
                 id: undefined,
                 team_id: team_id,
@@ -196,7 +192,8 @@ const TeamHeroFacetComponent: React.FC<TeamHeroFacetComponentProps> = ({ selecte
         getHeroes().then(data => setHeroes(data));
     }, []);
     useEffect(() => {
-        updateTeamData(selectedTeam)
+        setIsLoading(true);
+        updateTeamData(selectedTeam).then(() => setIsLoading(false))
     }, [selectedTeam]);
 
 
@@ -205,6 +202,11 @@ const TeamHeroFacetComponent: React.FC<TeamHeroFacetComponentProps> = ({ selecte
     const filteredHeroes = heroes?.filter(hero =>
         hero.localized_name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
     return (
             <HeroListComponent heroes={filteredHeroes} heroVariantPrefs={heroVariantPrefs} />
     );

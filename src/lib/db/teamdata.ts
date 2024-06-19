@@ -17,7 +17,8 @@ export async function GetTeamData(teamId: number) {
 
 export async function UpdateTeamData(teamId: number, teamName: string) {
     console.log("Updating TeamData of team id", teamId)
-    const { rows } = await pool.query('INSERT INTO team_data (team_id, team_name, last_fetched) VALUES ($1, $2, $3)',
+    const { rows } = await pool.query("INSERT INTO team_data (team_id, team_name, last_fetched) VALUES ($1, $2, $3) \
+        ON CONFLICT (team_id) DO UPDATE SET last_fetched = $3 ",
          [teamId, teamName, new Date().toISOString()]);
     console.log(rows)
 }

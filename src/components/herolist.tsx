@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Card, TextField, ImageList, ImageListItem, Autocomplete, List, ListItem } from "@mui/material";
+import { Card, TextField, ImageList, ImageListItem, Autocomplete, List, ListItem, useMediaQuery } from "@mui/material";
 
 import { TeamHeroFacet } from "@/lib/db/teamherofacets";
 
@@ -22,6 +22,7 @@ export const HeroListComponent: React.FC<HeroListComponentProps> = ({ heroes, he
     heroes.forEach(hero => heroList.push(hero.localized_name ? hero.localized_name : ''))
     heroList.sort()
     heroList.unshift('All')
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
     return (
         <div className="rounded-md p-5" style={{ width: '100%', height: '100%', overflow: 'auto' }}>
             <Autocomplete className="p-5"
@@ -45,14 +46,17 @@ export const HeroListComponent: React.FC<HeroListComponentProps> = ({ heroes, he
                     if (heroPreferences.length > 0) {
 
                         return (
-                            <Card key={hero.id}>
+                            <Card className="p-1" key={hero.id} style={{display:'flex'}}>
                                 <ListItem className="p-1" sx={{ width: 1, height: 1 / 2 }}>
                                     <img
                                         src={`https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/${hero.name?.replace('npc_dota_hero_', '')}.png`}
                                         alt={hero.localized_name}
                                         loading="lazy"
+                                        style={{ width: isSmallScreen ? '50%' : 'auto', height: 'auto' }}
                                     />
-                                <FacetComponent hero={hero} preference={heroPreferences} />
+                                    <div style={{ width: isSmallScreen ? '50%' : '100%' }}>
+                                        <FacetComponent hero={hero} preference={heroPreferences} />
+                                    </div>
                                 </ListItem>
                             </Card>
 

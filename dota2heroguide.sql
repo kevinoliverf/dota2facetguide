@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS team_data(
     last_fetched TIMESTAMP NOT NULL
 
 ); 
-CREATE INDEX team_data_team_id_idx ON team_hero_facets(team_id);
+CREATE INDEX team_data_team_id_idx ON team_data(team_id);
 
 CREATE TABLE IF NOT EXISTS team_hero_facets(
     id SERIAL PRIMARY KEY,
