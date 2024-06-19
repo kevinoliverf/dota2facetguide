@@ -9,7 +9,6 @@ export async function InsertProcessedMatch(match: ProcessedMatches) {
     console.log("Inserting Match", match.id)
     const { rows } = await pool.query('INSERT INTO processed_matches (id) VALUES ($1)',
         [match.id]);
-    console.log(rows)
 }
 
 export async function GetProcessedMatch(matchId: number) {
