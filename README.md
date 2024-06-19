@@ -1,4 +1,4 @@
-# Dota Hero Facets Analyzer
+# Dota Hero Facets Guide
 
 In Dota 2, the introduction of Hero Facets in version 7.36 has added a new layer of complexity. Players are now faced with the challenge of determining the optimal facet for their heroes. To aid in this decision-making process, the Dota 2 Hero Facets Guide fetches and processes match data from OpenDota, providing a streamlined way to view the facets being utilized by top professional teams. This tool offers valuable insights, helping players make informed decisions about their facet choices.
 
