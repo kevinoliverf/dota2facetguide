@@ -17,33 +17,33 @@ export type ValveHero = {
 
 export async function getHeroDetails(heroId: number) {
     let client;
-    try {
-        console.log("CONNECTING")
-        client = await redis();
-        console.log("DONE CONNECTING")
-    } catch (error) {
-        console.error('Error connecting to Redis:', error)
-        throw error
-    }
     const key = `hero:${heroId}`
     try {
-        console.log("GETTING")
-        const valveHeroDetails = await client.get(key)
-        console.log("DONE GETTING")
-        if (valveHeroDetails) {
-            return JSON.parse(valveHeroDetails) as ValveHero
+        client = await redis();
+        try {
+            const valveHeroDetails = await client.get(key)
+            if (valveHeroDetails) {
+                return JSON.parse(valveHeroDetails) as ValveHero
+            }
+        } catch (error) {
+            console.error('Error getting hero details from Redis:', error)
         }
+
     } catch (error) {
-        console.error('Error getting hero details from Redis:', error)
+        console.error('Error connecting to Redis:', error)
     }
 
-
-    const response = await fetch(`https://www.dota2.com/datafeed/herodata?language=english&hero_id=${heroId}`, {cache: 'no-store'})
-    if (!response.ok){
+    const response = await fetch(`https://www.dota2.com/datafeed/herodata?language=english&hero_id=${heroId}`, { cache: 'no-store' })
+    if (!response.ok) {
         throw new Error('Network response was not ok')
     }
     const body = await response.json()
-    client.set(key, JSON.stringify(body.result.data.heroes[0]))
+    try {
+        client = await redis();
+        client.set(key, JSON.stringify(body.result.data.heroes[0]))
+    } catch (error) {
+        console.error('Failed to set to Redis:', error)
+    }
     const heroDetails = body.result.data.heroes[0] as ValveHero
-    return heroDetails 
+    return heroDetails
 }
