@@ -16,12 +16,27 @@ export type ValveHero = {
 }
 
 export async function getHeroDetails(heroId: number) {
-    const client = await redis();
-    const key = `hero:${heroId}`
-    const valveHeroDetails = await client.get(key)
-    if (valveHeroDetails){
-        return JSON.parse(valveHeroDetails) as ValveHero
+    let client;
+    try {
+        console.log("CONNECTING")
+        client = await redis();
+        console.log("DONE CONNECTING")
+    } catch (error) {
+        console.error('Error connecting to Redis:', error)
+        throw error
     }
+    const key = `hero:${heroId}`
+    try {
+        console.log("GETTING")
+        const valveHeroDetails = await client.get(key)
+        console.log("DONE GETTING")
+        if (valveHeroDetails) {
+            return JSON.parse(valveHeroDetails) as ValveHero
+        }
+    } catch (error) {
+        console.error('Error getting hero details from Redis:', error)
+    }
+
 
     const response = await fetch(`https://www.dota2.com/datafeed/herodata?language=english&hero_id=${heroId}`, {cache: 'no-store'})
     if (!response.ok){

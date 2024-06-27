@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Card, Grid, useMediaQuery } from "@mui/material";
+import { Alert, Card, Grid, useMediaQuery } from "@mui/material";
 
 import { Hero } from "./teamherofacets";
 import { ValveHero, getHeroDetails } from "../lib/api/valve/getherodetails";
@@ -23,6 +23,7 @@ type FacetComponentProps = {
 
 export const FacetComponent: React.FC<FacetComponentProps> = ({hero, preference}) => {
     const [heroDetails, setHeroDetails] = useState<ValveHero>(); // Add this line
+    const [error, setError] = useState<any>();
 
     const isSmallScreen = useMediaQuery('(max-width:600px)');
     function toPercentage(decimal: number): string {
@@ -90,19 +91,29 @@ export const FacetComponent: React.FC<FacetComponentProps> = ({hero, preference}
         })
         return elements;
     }
-
-
-    useEffect(() => {
-        const InitSetHero = async () => {
+    const InitSetHero = async () => {
+        try {
             const heroDetails = await getHeroDetails(hero.id)
             setHeroDetails(heroDetails)
+        } catch (error) {
+            console.log("Failed to get hero detailz", error)
+            setError(error)
         }
+    }
+
+    useEffect(() => {
         InitSetHero()
     }, [])
 
+    if (error) {
+        return (
+            <Alert severity="error">Failed to get hero data. Please try again later!</Alert>
+        )
+    }
+
     return (
         <div className="rounded-md p-1"
-        style={{ display: 'flex', flexDirection: isSmallScreen ? 'column' : 'row',  width: '100%', height: '100%', overflow: 'auto' }}>
+            style={{ display: 'flex', flexDirection: isSmallScreen ? 'column' : 'row', width: '100%', height: '100%', overflow: 'auto' }}>
             {
                 heroVariantToCard(preference)
             }

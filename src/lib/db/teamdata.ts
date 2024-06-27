@@ -1,7 +1,7 @@
 'use server'
 import pool from '@/lib/postgres'
 
-type TeamData = {
+export type TeamData = {
     team_id: number;
     team_name: string;
     last_fetched: Date;

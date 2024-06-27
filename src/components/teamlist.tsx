@@ -16,7 +16,6 @@ type TeamListComponentProps = {
 }
 export const TeamListComponent: React.FC<TeamListComponentProps> = ({selectedTeam, setSelectedTeam, setSelectedTeamName}) => {
     const [teams, setTeams] = useState<Team[]>([]);
-    const [searchTerm, setSearchTerm] = useState('');
     const [selectedTeamSchema, setSelectedTeamSchema] = useState<Team>();   
     const [loading, setLoading] = useState(true);
     const [inputValue, setInputValue] = useState("");
@@ -43,7 +42,6 @@ export const TeamListComponent: React.FC<TeamListComponentProps> = ({selectedTea
             if (t.last_match_time && t.last_match_time < oneMonthAgo) {
                 continue;
             }
-            console.log(t)
             teams.push(t);
         }
         return teams;
@@ -60,17 +58,8 @@ export const TeamListComponent: React.FC<TeamListComponentProps> = ({selectedTea
         if(loading){
             return
         }
-        console.log("FINDING TEAM", selectedTeam)
         const foundTeam = teams.find(team => team.team_id === selectedTeam);
-        for (let i = 0; i < teams.length; i++) {
-            console.log("Checking team", teams[i].team_id ,"vs", selectedTeam)
-            console.log("bool", teams[i].team_id === selectedTeam)
-            if (teams[i].team_id === selectedTeam) {
-                console.log("found team", teams[i])
-            }
-        }
         if (foundTeam) {
-            console.log("found team", foundTeam)
             setSelectedTeamSchema(foundTeam)
         }
     }, [teams,loading,selectedTeam]);

@@ -1,11 +1,11 @@
 'use client'
 import React, { useEffect, useState } from "react";
 
-import { Card } from "@mui/material";
+import { Alert, Card, CircularProgress } from "@mui/material";
 
 import client from "@/lib/api/opendota/client";
 import {components} from "@/lib/api/opendota/schema";
-import { UpdateTeamData, GetTeamData} from "../lib/db/teamdata";
+import { TeamData, UpdateTeamData, GetTeamData} from "../lib/db/teamdata";
 import { TeamHeroFacet, ListTeamHeroFacets, InsertTeamHeroFacets } from "@/lib/db/teamherofacets";
 import { GetProcessedMatch, InsertProcessedMatch } from "@/lib/db/processedmatch";
 
@@ -139,7 +139,14 @@ const TeamHeroFacetComponent: React.FC<TeamHeroFacetComponentProps> = ({ selecte
         if (teamId === 0) {
             return [];
         }
-        const teamData = await GetTeamData(teamId)
+        let teamData: TeamData | null = null;
+        try {
+            teamData = await GetTeamData(teamId)
+        } catch (err) {
+            console.log("Error getting team data", err)
+            setError(err)
+            return
+        }
         const today = new Date();
         let matches: TeamMatch[] = [];
         today.setHours(0, 0, 0, 0);
@@ -187,7 +194,8 @@ const TeamHeroFacetComponent: React.FC<TeamHeroFacetComponentProps> = ({ selecte
 
         return matches;
     }
-    // Add this useEffect
+
+    const [error, setError] = useState<any>();
     useEffect(() => {
         getHeroes().then(data => setHeroes(data));
     }, []);
@@ -203,12 +211,25 @@ const TeamHeroFacetComponent: React.FC<TeamHeroFacetComponentProps> = ({ selecte
         hero.localized_name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    if (isLoading) {
-        return <div>Loading...</div>;
+    if (error) {
+        return (
+            <Alert severity="error">Failed to get team data. Please try again later!</Alert>
+        )
     }
 
+    if (isLoading) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <CircularProgress />
+            </div >
+
+        )
+    }
+
+
+
     return (
-            <HeroListComponent heroes={filteredHeroes} heroVariantPrefs={heroVariantPrefs} />
+        <HeroListComponent heroes={filteredHeroes} heroVariantPrefs={heroVariantPrefs} />
     );
 }
 
