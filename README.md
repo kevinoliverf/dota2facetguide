@@ -23,6 +23,3 @@ docker-compose up -d
 # Start the development server
 yarn dev
 
-## Live Demo
-
-A sample of this application is deployed on [AWS](http://dota2facets.kevinof.com/) using EC2 + RDS! Feel free to check it out!
